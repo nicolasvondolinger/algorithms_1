@@ -216,21 +216,21 @@
     tie(mean_iterative_insertion, stdev_iterative_insertion) = calculate_statistics(times_iterative_insertion);
 
 
-    // Imprimir os resultados
-    cout << "Resultados:\n";
-    cout << "(i) Quicksort recursivo puro:\n";
-    cout << "   Média de tempo: " << mean_recursive << " ms\n";
-    cout << "   Desvio padrão: " << stdev_recursive << " ms\n";
-    cout << "(ii) Quicksort recursivo & Ordenação por inserção:\n";
-    cout << "   Média de tempo: " << mean_recursive_insertion << " ms\n";
-    cout << "   Desvio padrão: " << stdev_recursive_insertion << " ms\n";
-    cout << "(iii) Quicksort não recursivo puro:\n";
-    cout << "   Média de tempo: " << mean_iterative << " ms\n";
-    cout << "   Desvio padrão: " << stdev_iterative << " ms\n";
-    cout << "(iv) Quicksort não recursivo & Ordenação por inserção:\n";
-    cout << "   Média de tempo: " << mean_iterative_insertion << " ms\n";
-    cout << "   Desvio padrão: " << stdev_iterative_insertion << " ms\n";
-
+    // Print the results
+    cout << "Results:\n";
+    cout << fixed << setprecision(4) << endl;
+    cout << "(i) Pure Recursive Quicksort:\n";
+    cout << " Average time: " << mean_recursive << " ms\n";
+    cout << " Standard deviation: " << stdev_recursive << " ms\n";
+    cout << "(ii) Recursive Quicksort & Insertion Sort:\n";
+    cout << " Average time: " << mean_recursive_insertion << " ms\n";
+    cout << " Standard deviation: " << stdev_recursive_insertion << " ms\n";
+    cout << "(iii) Pure Iterative Quicksort:\n";
+    cout << " Average time: " << mean_iterative << " ms\n";
+    cout << " Standard deviation: " << stdev_iterative << " ms\n";
+    cout << "(iv) Iterative Quicksort & Insertion Sort:\n";
+    cout << " Average time: " << mean_iterative_insertion << " ms\n";
+    cout << " Standard deviation: " << stdev_iterative_insertion << " ms\n";
 
 
         return 0;
