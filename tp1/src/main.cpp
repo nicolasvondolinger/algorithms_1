@@ -6,28 +6,6 @@ using namespace std;
 #define ss second
 #define pb push_back
 
-/*
-double originDitance(int a){
-    return sqrt(a.x*a.x + a.y*a.y);
-}
-
-double distance(int a, int b){
-    double x = (a.x - b.x), y = (a.y - b.y);
-    return sqrt(x*x + y*y);
-}
-
-double inclination(int p){
-    return atan2(p.y, p.x);
-}
-
-int curve(int a, int b, int c){
-    double v = a.x*(b.y-c.y) + b.x*(c.y-a.y) + c.x*(a.y-b.y);
-    if(v < 0) return -1; //esquerda
-    if(v > 0) return 1; //direita
-    return 0;
-}
-*/
-
 vector<int> face;
 vector<vector<int>> faces;
 
