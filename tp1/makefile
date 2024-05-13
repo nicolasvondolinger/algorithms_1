@@ -1,29 +1,30 @@
-CC = g++
-LIBS = -lm
-SRC = src
-OBJ = obj
-INC = include
-BIN = bin
+# Compilador
+CXX = g++
 
-OBJS = $(OBJ)/vertex.o $(OBJ)/edge.o $(OBJ)/main.o
-HDRS = $(INC)/vertex.hpp $(OBJ)/edge.hpp 
-CFLAGS = -g -Wall -c -I$(INC)
+# Opções de compilação
+CXXFLAGS = -std=c++11 -Wall -Wextra
 
-EXE = $(BIN)/code.out
+# Nome do executável
+TARGET = main
 
-all: $(EXE)
+# Lista de arquivos fonte
+SRCS = main.cpp
 
+# Lista de arquivos objeto gerados a partir dos arquivos fonte
+OBJS = $(SRCS:.cpp=.o)
+
+# Comando para compilar o programa
+$(TARGET): $(OBJS)
+	$(CXX) $(CXXFLAGS) -o $@ $(OBJS)
+
+# Regra para compilar os arquivos objeto
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Regra para limpar arquivos gerados
 clean:
-	rm -f $(EXE) $(OBJS) gmon.out
+	rm -f $(OBJS) $(TARGET)
 
-$(EXE): $(OBJS) | $(BIN)
-	$(CC) $(OBJS) -o $(EXE) $(LIBS)
-
-$(BIN):
-	mkdir -p $(BIN)
-
-$(OBJ)/%.o: $(SRC)/%.cpp $(HDRS) | $(OBJ)
-	$(CC) $(CFLAGS) $< -o $@
-
-$(OBJ):
-	mkdir -p $(OBJ)
+# Phony target para garantir que as regras sejam executadas mesmo se houver
+# um arquivo chamado clean ou dependências
+.PHONY: clean
