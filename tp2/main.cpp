@@ -112,6 +112,7 @@
      
     const int INF = 0x3f3f3f3f;
     const ll LINF = 0x3f3f3f3f3f3f3f3fll;
+    int n1 = 0;
 
     void print(vector<int>& cost){
         for(unsigned i = 0; i < cost.size(); i++){
@@ -119,7 +120,7 @@
         }
     }
 
-    vector<int> dijkstra_years(vector<vector<pair<int, pair<int, pair<int, int>>>>>& graph){
+    vector<int> dijkstra(vector<vector<pair<int, pair<int, pair<int, int>>>>>& graph){
         priority_queue<pair<int, int>> pq;
         vector<int> ans(graph.size(), INF);
 
@@ -135,6 +136,7 @@
                 if(ans[v] > ans[u] + w){
                     ans[v] = ans[u] + w;
                     pq.push(make_pair(-ans[v], v));
+                    n1 = max(n1, x.ss.ff);
                 }
             }
         }
@@ -142,29 +144,29 @@
         return ans;
     }
 
-    ll dijkstra_cost(vector<vector<pair<int, pair<int, pair<int, int>>>>>& graph){
+    ll minimun_spanning_tree(vector<vector<pair<int, pair<int, pair<int, int>>>>>& graph){
         ll t = 0;
-        priority_queue<pair<int, int>> pq;
-        vector<int> ans(graph.size(), INF);
-
-        pq.push(make_pair(-0, 0));
-        ans[0] = 0;
-
+        vector<bool> visited(graph.size(), false);
+        vector<vector<pair<int, int>>> ng(graph.size());
+        for(int i = 0; i < graph.size(); i++){
+            for(int j = 0; j < graph[i].size(); j++){
+                ng[i].pb(make_pair(graph[i][j].ss.ss.ss, graph[i][j].ff));
+            }
+        }
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        pq.push({0, 0});
         while(!pq.empty()){
-            int u = pq.top().ss;
-            pq.pop();
-            for(auto x: graph[u]){
-                int v = x.ff;
-                int w = x.ss.ss.ss;
-                if(ans[v] > ans[u] + w){
-                    t += w;
-                    ans[v] = ans[u] + w;
-                    pq.push(make_pair(-ans[v], v));
+            auto p = pq.top(); pq.pop();
+            int c = p.ff, u = p.ss;
+            if(visited[u]) continue;
+            t += c; visited[u] = true;
+            for(auto v: ng[u]){
+                if(!visited[v.ss]){
+                    pq.push(v);
                 }
             }
         }
 
-        //print(ans);
         return t;
     }
 
@@ -181,10 +183,9 @@
         vector<vector<pair<int, pair<int, pair<int, int>>>>> graph(n); 
         pair<int, pair<int, pair<int, int>>> p1, p2;
         set<int> years;
-        int u, v, a, l, c, n1 = -1;
+        int u, v, a, l, c;
         rep(i, 0, m){
             cin >> u >> v >> a >> l >> c; u--, v--; 
-            n1 = max(n1, a);
             years.insert(a);
             p1.ff = v; p1.ss.ff = a, p1.ss.ss.ff = l, p1.ss.ss.ss = c; 
             graph[u].pb(p1);
@@ -192,7 +193,6 @@
             graph[v].pb(p2);
         }
 
-        vector<int> cost = dijkstra_years(graph);
         int n2;
         for(auto i: years){
             int count = 0;
@@ -208,11 +208,11 @@
             }
         }
 
+        vector<int> cost = dijkstra(graph);
         print(cost); // Horas
         cout << n1 << endl; // Distâncias Mutuamente Realizáveis 
         cout << n2 << endl; // Ano a partir do qual o grafo é conexo
-        cout << dijkstra_cost(graph) << endl; // Menor custo para conectar o reino
-
+        cout << minimun_spanning_tree(graph) << endl; // Menor custo para conectar o reino
     }
      
     int main(){ 
