@@ -123,23 +123,28 @@
 
     vector<ll> dijkstra(vector<vector<Path>>& graph){
         priority_queue<pair<ll, ll>> pq;
-        vector<ll> ans(graph.size(), INF);
+        vector<ll> ans(graph.size(), LINF);
+
+        vector<ll> times(graph.size(), LINF);
+        times[0] = 0;
 
         pq.push(make_pair(-0, 0));
         ans[0] = 0;
 
         while(!pq.empty()){
-            ll u = pq.top().ss;
+            ll current = pq.top().ss;
             pq.pop();
-            for(auto x: graph[u]){
+            for(Path x: graph[current]){
                 ll v = x.destiny, w = x.crossTime;
-                if(ans[v] > ans[u] + w){
-                    ans[v] = ans[u] + w;
+                if(ans[v] > ans[current] + w){
+                    ans[v] = ans[current] + w;
                     pq.push(make_pair(-ans[v], v));
-                    n1 = max(n1, x.finalYear);
+                    times[v] = x.finalYear;
                 }
             }
         }
+
+        for(auto t: times) n1 = max(n1, t);
 
         return ans;
     }
@@ -215,8 +220,8 @@
 
         vector<ll> cost = dijkstra(graph);
         print(cost); // Horas
-        cout << n1 << endl; // Distâncias Mutuamente Realizáveis - ERRO AQUI
-        cout << n2 << endl; // Ano a partir do qual o grafo é conexo - ERRO AQUI
+        cout << n1 << endl; // Distâncias Mutuamente Realizáveis
+        cout << n2 << endl; // Ano a partir do qual o grafo é conexo
         cout << minimun_spanning_tree(graph) << endl; // Menor custo para conectar o reino
     }
      

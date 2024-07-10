@@ -95,70 +95,15 @@
     using namespace std;
      
     #define _ ios_base::sync_with_stdio(0);cin.tie(0);
-    #define rep(i,x,n) for(int i=x;i<n;i++)
-    #define repr(i,n,x) for(int i=n;i>=x;i--)
-    #define forr(v) for(auto& x: v)
-    #define all(a) (a).begin(), (a).end()
     #define endl '\n'
     #define ff first
     #define ss second
     #define pb push_back
      
     typedef long long ll;
-    typedef pair<int,int> ii;
-    typedef vector<int> vi;
-    typedef vector<ll> vl;
      
     const int INF = 0x3f3f3f3f;
     const ll LINF = 0x3f3f3f3f3f3f3f3fll;
-     
-    void DBG() {
-        cerr << "]" << endl;
-    }
-     
-    void DBGC() {
-        cerr << "]" << endl;
-    }
-     
-    template<class H, class... T> void DBG(H h, T... t) {
-        cerr << to_string(h);
-        if(sizeof...(t)) cerr << ", ";
-        DBG(t...);
-    }
-     
-    template<class H, class... T> void DBGC(H h, T... t) {
-        for(auto& x: h) cerr << x << " ";
-        if(sizeof...(t)) cerr << "], [ ";
-        DBGC(t...);
-    }
-     
-    #ifndef _DEBUG
-    #define dbg(...) cerr << "[" << #_VA_ARGS_ << "]: [", DBG(_VA_ARGS_)
-    #define dbgc(...) cerr << "["<< #_VA_ARGS_ << "]: [ "; DBGC(_VA_ARGS_) 
-    #else
-    #define dbg(...) 0
-    #define dbgc(...) 0
-    #endif
-     
-    bool isPrime(ll n){
-        for(int i = 2; i*i <= n; i++) if(n%i == 0) return false;
-        return true;
-    }
-
-    ll mdc(ll a, ll b){
-        if(a%b == 0) return b;
-        else return mdc(b, a%b);
-    }
-
-    ll mmc(ll a, ll b){
-        ll r, n, m; n = a, m = b;
-        do{
-            r = n % m;
-            n = m;
-            m = r;
-        } while(r != 0);
-        return (a*b)/ n;
-    }
 
     void print(vector<vector<int>>& matrix){
         for(int i = 0; i < matrix.size(); i++){
@@ -166,35 +111,6 @@
                 cout << matrix[i][j] << " ";
             }   
             cout << endl;
-        }
-    }
-
-    int binarySearch(vector<int> arr, int l, int r, int x){
-        while (l <= r) {
-            int m = l + (r - l) / 2;
-
-            
-            if (arr[m] == x)
-                return m;
-
-            if (arr[m] < x)
-                l = m + 1;
-
-            else
-                r = m - 1;
-        }
-        return -1;
-    }
-
-    ll fatorial(ll n){
-        if(n == 1) return 1;
-        else return n * fatorial(n-1);
-    }
-
-    void dfs(vector<vector<int>>& graph, vector<bool>& visited, int n){
-        visited[n] = true;
-        for(auto w: graph[n]){
-            if(!visited[w]) dfs(graph, visited, w);
         }
     }
 
