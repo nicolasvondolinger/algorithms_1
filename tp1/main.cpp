@@ -32,7 +32,7 @@ double relativeInclination(double x1, double x2, double y1, double y2){
  * @return Sorted list of connections based on their relative inclinations
  */
 
-vector<int> sort_connections(int i, vector<int>& connections, vector<pair<double, double>> pos){
+vector<int> sortConnections(int i, vector<int>& connections, vector<pair<double, double>> pos){
     double x_ref = pos[i].first;
     double y_ref = pos[i].second;
     sort(connections.begin(), connections.end(), [&](double a, double b) {
@@ -127,7 +127,7 @@ int main (){
     sort(orderToVisit.begin(), orderToVisit.end());
     
     for(int i = 0; i < n; i++){
-        graph[i] = sort_connections(i, graph[i], positions);
+        graph[i] = sortConnections(i, graph[i], positions);
     }
 
     for(int i = 0; i < visited.size(); i++){
