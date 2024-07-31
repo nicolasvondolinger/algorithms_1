@@ -92,7 +92,7 @@
 // /,,****,**,****,*,,,,,*#%&%###%%%####%%%%###%%%####%%%%%%##%%&%#(###############(///*/(#############(/#%&%%%%%%%%%%%%%#%%&&%%%##%%%#######((((*,,,,*,,*,,,,,,***,****/(((#
 // /,,****,**,****,*,,,,,*#%&%###%%%####%%%%###%%%####%%%%%%##%%&%#(###############(///*/(#############(/#%&%%%%%%%%%%%%%#%%&&%%%##%%%#######((((*,,,,*,,*,,,,,,***,****/(((#
     
-#include <bits/stdc++.h>
+    #include <bits/stdc++.h>
 using namespace std;
 
 #define _ ios_base::sync_with_stdio(0); cin.tie(0);
@@ -171,7 +171,7 @@ vector<ll> dijkstra(vector<vector<Path>>& graph){
  * @param       graph   Adjacency list of the graph.
  * @return      Total cost of the MST.
  */
-ll minimunSpanningTree(vector<vector<Path>>& graph){
+ll minimun_spanning_tree(vector<vector<Path>>& graph){
     ll t = 0;
     vector<bool> visited(graph.size(), false);
     vector<vector<pair<ll, ll>>> ng(graph.size());
@@ -254,7 +254,7 @@ void solve(){
     print(cost); // Hours
     cout << n1 << endl; // Mutually Realizable Distances
     cout << n2 << endl; // Year from which the graph is connected
-    cout << minimunSpanningTree(graph) << endl; // Minimum cost to connect the kingdom
+    cout << minimun_spanning_tree(graph) << endl; // Minimum cost to connect the kingdom
 }
 
 int main(){ 
