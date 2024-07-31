@@ -105,63 +105,29 @@
     const int INF = 0x3f3f3f3f;
     const ll LINF = 0x3f3f3f3f3f3f3f3fll;
 
-    void print(vector<vector<int>>& matrix){
-        for(int i = 0; i < matrix.size(); i++){
-            for(int j = 0; j < matrix[i].size(); j++){
-                cout << matrix[i][j] << " ";
-            }   
-            cout << endl;
-        }
-    }
-
-    int getBetter(vector<pair<int, int>>& track, vector<bool>& visited){
-        int p = -1, b = -1;
-
-        for(int i = 0; i < track.size(); i++){
-            if(!visited[i]){
-                if(track[i].ff > b){
-                    b = track[i].ff; p = i; continue;
-                }else if(track[i].ff == b && track[i].ss > track[p].ss){
-                    p = i; continue;
-                }
-            }
-        }
-
-        return p;
-    }
-
     void printAns(vector<vector<int>>& ans, vector<pair<int, int>>& maneuvers, vector<pair<int, int>>& track){
-
+        
     }
 
     void solve(){
         int n, k; cin >> n >> k;
         vector<pair<int, int>> track(n);
-        int b = 0;
+        int maxTime = 0;
         for(int i = 0; i < n; i++){
             cin >> track[i].ff >> track[i].ss;
-            b = max(b, track[i].ss);
+            maxTime = max(maxTime, track[i].ss);
         }
 
         vector<pair<int, int>> maneuvers;
         for(int i = 0; i < k; i++){
             int p, t; cin >> p >> t;
-            if(t <= b){
+            if(t <= maxTime && p > 0){
                 maneuvers.pb(make_pair(p, t));
             }
         }
-
-        sort(maneuvers.begin(), maneuvers.end());
         
-        int p;
-        vector<bool> visited(n);
-        vector<vector<int>> ans(n);
-        while(p = getBetter(track, visited) != -1){
-            visited[p] = true;
-            
-        }
 
-        printAns(ans, maneuvers, track);
+        //printAns(ans, maneuvers, track);
 
     }
      
