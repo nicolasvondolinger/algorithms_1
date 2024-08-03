@@ -105,30 +105,52 @@
     const int INF = 0x3f3f3f3f;
     const ll LINF = 0x3f3f3f3f3f3f3f3fll;
 
-    void printAns(vector<vector<int>>& ans, vector<pair<int, int>>& maneuvers, vector<pair<int, int>>& track){
-        
+    class maneuver{
+        public:
+            ll pontuation;
+            ll time;
+    };
+
+    class section{
+        public:
+            ll bonus;
+            ll time;
+    };        
+
+    void calculeCombination(vector<vector<ll>>& maneuverCombination, vector<maneuver>& maneuvers, ll currentSection){
+        for(int mask = 1; mask < maneuverCombination[currentSection].size(); mask++){
+            for(int i = 0; i < maneuvers.size(); i++){
+                if((mask & (1 << i))){
+                    int prevMask = mask ^ (1 << i);
+                    maneuverCombination[currentSection][mask] = maneuverCombination[currentSection][prevMask] + maneuvers[i].pontuation;
+                    break;
+                }
+            }
+        }
     }
 
     void solve(){
-        int n, k; cin >> n >> k;
-        vector<pair<int, int>> track(n);
-        int maxTime = 0;
-        for(int i = 0; i < n; i++){
-            cin >> track[i].ff >> track[i].ss;
-            maxTime = max(maxTime, track[i].ss);
+
+        ll n, k, maxTime = 0; cin >> n >> k;
+        vector<section> track(n);
+        for(ll i = 0; i < n; i++){
+            section t;  cin >> t.bonus >> t.time;
+            maxTime = max(maxTime, t.time);
         }
 
-        vector<pair<int, int>> maneuvers;
-        for(int i = 0; i < k; i++){
-            int p, t; cin >> p >> t;
-            if(t <= maxTime && p > 0){
-                maneuvers.pb(make_pair(p, t));
-            }
+        vector<maneuver> maneuvers;
+        for(ll i = 0; i < k; i++){
+            maneuver m; cin >> m.pontuation >> m.time;
+            if(m.pontuation > 0 && m.time <= maxTime) maneuvers.pb(m);
+        }
+
+        vector<vector<ll>> maneuverCombination(n, vector<ll>(1 << maneuvers.size(), -INF));
+
+        for(int i = 0; i < n; i++){
+            maneuverCombination[i][0] = 0;
+            calculeCombination(maneuverCombination, maneuvers, i);
         }
         
-
-        //printAns(ans, maneuvers, track);
-
     }
      
     int main(){ 
