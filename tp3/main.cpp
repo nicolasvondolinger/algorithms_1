@@ -117,15 +117,48 @@
             ll time;
     };        
 
-    void calculeCombination(vector<vector<ll>>& maneuverCombination, vector<maneuver>& maneuvers, ll currentSection){
+    ll countSetBits(ll n){
+        int count = 0;
+        while(n){
+            count += n & 1;
+            n >>= 1;
+        }
+        return count;
+    }
+
+    ll calculeTimeUsed(ll mask, vector<maneuver>& maneuvers){
+        ll total = 0, position = 0;
+        while(mask){
+            if(mask & 1){
+                total += maneuvers[position].time;
+            }
+            mask >>= 1; position++;
+        }
+        return total;
+    }
+
+    void calculeCombination(vector<vector<ll>>& maneuverCombination, vector<maneuver>& maneuvers, vector<section>& track, ll currentSection){
         for(int mask = 1; mask < maneuverCombination[currentSection].size(); mask++){
             for(int i = 0; i < maneuvers.size(); i++){
                 if((mask & (1 << i))){
-                    int prevMask = mask ^ (1 << i);
-                    maneuverCombination[currentSection][mask] = maneuverCombination[currentSection][prevMask] + maneuvers[i].pontuation;
+                    ll prevMask = mask ^ (1 << i), timeUsed = calculeTimeUsed(mask, maneuvers);
+                    if(timeUsed <= track[currentSection].time){
+                        maneuverCombination[currentSection][mask] = maneuverCombination[currentSection][prevMask] + maneuvers[i].pontuation;
+                    }
                     break;
                 }
             }
+        }
+        for(int j = 1; j < 1 << maneuvers.size(); j++) 
+            if(maneuverCombination[currentSection][j] >= 0) maneuverCombination[currentSection][j] *= countSetBits(j) * track[currentSection].bonus;
+    }
+
+    void print(vector<vector<ll>>& v){
+        for(int i = 0; i < v.size(); i++){
+            for(int j = 0; j < v[i].size(); j++){
+                cout << v[i][j] << " ";
+            }   
+            cout << endl;
         }
     }
 
@@ -134,8 +167,8 @@
         ll n, k, maxTime = 0; cin >> n >> k;
         vector<section> track(n);
         for(ll i = 0; i < n; i++){
-            section t;  cin >> t.bonus >> t.time;
-            maxTime = max(maxTime, t.time);
+            cin >> track[i].bonus >> track[i].time;
+            maxTime = max(maxTime, track[i].time);
         }
 
         vector<maneuver> maneuvers;
@@ -148,8 +181,10 @@
 
         for(int i = 0; i < n; i++){
             maneuverCombination[i][0] = 0;
-            calculeCombination(maneuverCombination, maneuvers, i);
+            calculeCombination(maneuverCombination, maneuvers, track, i);
         }
+
+        print(maneuverCombination);
         
     }
      
