@@ -105,6 +105,8 @@
     const int INF = 0x3f3f3f3f;
     const ll LINF = 0x3f3f3f3f3f3f3f3fll;
 
+    vector<ll> auxCombination, finalCombination;
+
     class maneuver{
         public:
             ll pontuation;
@@ -118,7 +120,7 @@
     };        
 
     ll countSetBits(ll n){
-        int count = 0;
+        ll count = 0;
         while(n){
             count += n & 1;
             n >>= 1;
@@ -137,20 +139,39 @@
         return total;
     }
 
-    void calculeCombination(vector<vector<ll>>& maneuverCombination, vector<maneuver>& maneuvers, vector<section>& track, ll currentSection){
-        for(int mask = 1; mask < maneuverCombination[currentSection].size(); mask++){
-            for(int i = 0; i < maneuvers.size(); i++){
-                if((mask & (1 << i))){
-                    ll prevMask = mask ^ (1 << i), timeUsed = calculeTimeUsed(mask, maneuvers);
-                    if(timeUsed <= track[currentSection].time){
-                        maneuverCombination[currentSection][mask] = maneuverCombination[currentSection][prevMask] + maneuvers[i].pontuation;
+    void calculeCombination(vector<vector<ll>>& maneuverCombination, vector<maneuver>& maneuvers, vector<section>& track){
+        for(int i = 0; i < maneuverCombination.size(); i++){
+            maneuverCombination[i][0] = 0;
+            for(int j = 1; j < maneuverCombination[i].size(); j++){
+                ll count = 0, a = i, b = j, sum = 0, mult = 0;
+                while(b){
+                    if(b & 1){
+                        if(a & 1) sum += maneuvers[count].pontuation/2;
+                        else sum += maneuvers[count].pontuation;
+                        mult++;
                     }
-                    break;
+                    count++;
+                    a>>=1; b>>=1;
                 }
+                maneuverCombination[i][j] = sum * mult;
             }
         }
-        for(int j = 1; j < 1 << maneuvers.size(); j++) 
-            if(maneuverCombination[currentSection][j] >= 0) maneuverCombination[currentSection][j] *= countSetBits(j) * track[currentSection].bonus;
+    }
+    
+    ll value = -1;
+
+    void dp(vector<vector<ll>>& maneuverCombination, vector<section>& track, vector<maneuver>& maneuvers, ll prevMask, ll currentSection, ll currentValue){
+        if(currentSection == track.size()) return; // Certo
+        
+        for(int i = 0; i < maneuverCombination.size(); i++){ //
+            if(calculeTimeUsed(i, maneuvers) > track[currentSection].time) continue; 
+            auxCombination[currentSection] = i;
+            dp(maneuverCombination, track, maneuvers, i, currentSection + 1, currentValue + (maneuverCombination[prevMask][i] * track[currentSection].bonus));
+            if(value < currentValue + (maneuverCombination[prevMask][i] * track[currentSection].bonus)){
+                finalCombination = auxCombination;
+                value = currentValue + (maneuverCombination[prevMask][i] * track[currentSection].bonus);
+            }
+        }
     }
 
     void print(vector<vector<ll>>& v){
@@ -158,6 +179,20 @@
             for(int j = 0; j < v[i].size(); j++){
                 cout << v[i][j] << " ";
             }   
+            cout << endl;
+        }
+    }
+
+    void printCombination(){
+        for(int i = 0; i < finalCombination.size(); i++){
+            //ll aux = countSetBits(finalCombination[i]), count = 0;
+            cout << countSetBits(finalCombination[i]) << " ";
+            ll aux = finalCombination[i], count = 0;
+            while(aux){
+                if(aux & 1) cout << count + 1 << " ";
+                aux >>= 1;
+                count++;
+            }
             cout << endl;
         }
     }
@@ -174,18 +209,21 @@
         vector<maneuver> maneuvers;
         for(ll i = 0; i < k; i++){
             maneuver m; cin >> m.pontuation >> m.time;
-            if(m.pontuation > 0 && m.time <= maxTime) maneuvers.pb(m);
+            if(m.pontuation >= 0 && m.time <= maxTime) maneuvers.pb(m);
         }
 
-        vector<vector<ll>> maneuverCombination(n, vector<ll>(1 << maneuvers.size(), -INF));
+        vector<vector<ll>> maneuverCombination(1 << maneuvers.size(), vector<ll>(1 << maneuvers.size()));
 
-        for(int i = 0; i < n; i++){
-            maneuverCombination[i][0] = 0;
-            calculeCombination(maneuverCombination, maneuvers, track, i);
-        }
+        auxCombination.resize(n, 0), finalCombination.resize(n, 0);        
 
-        print(maneuverCombination);
+        calculeCombination(maneuverCombination, maneuvers, track);
         
+        //print(maneuverCombination);
+        
+        dp(maneuverCombination, track, maneuvers, 0, 0, 0);
+
+        cout << value << endl;
+        printCombination();
     }
      
     int main(){ 
