@@ -140,10 +140,10 @@
         return total;
     }
 
-    void calculeCombination(vector<vector<ll>>& maneuverCombination, vector<maneuver>& maneuvers, vector<section>& track){
-        for(int i = 0; i < maneuverCombination.size(); i++){
+    void calculeCombination(vector<vector<ll>>& maneuverCombination, vector<maneuver>& maneuvers){
+        for(ll i = 0; i < maneuverCombination.size(); i++){
             maneuverCombination[i][0] = 0;
-            for(int j = 1; j < maneuverCombination[i].size(); j++){
+            for(ll j = 1; j < maneuverCombination[i].size(); j++){
                 ll count = 0, a = i, b = j, sum = 0, mult = 0;
                 while(b){
                     if(b & 1){
@@ -159,16 +159,20 @@
         }
     }
     
-    ll dp(vector<vector<ll>>& maneuverCombination, vector<section>& track, vector<maneuver>& maneuvers, ll prevMask, ll currentSection, ll currentValue){
-        if(currentSection == track.size()) return 0; // Certo
-        
-        for(int i = 0; i < maneuverCombination.size(); i++){ // Certo
-            if(calculeTimeUsed(i, maneuvers) > track[currentSection].time) continue; // Certo
-            ll& prev = memo[currentSection][i]; // Certo
-            if(prev != -1) return prev; // Certo
-            
+    ll dp(vector<vector<ll>>& maneuverCombination, vector<section>& track, vector<maneuver>& maneuvers, ll prevMask, ll currentSection){
+        if(currentSection == track.size()) return 0; 
+        if(memo[currentSection][prevMask] != -LINF) return memo[currentSection][prevMask];
+        ll atual = 0;
+        for(ll i = 0; i < maneuverCombination.size(); i++){ 
+            if(calculeTimeUsed(i, maneuvers) > track[currentSection].time) continue;    
+            ll p = dp(maneuverCombination, track, maneuvers, i, currentSection + 1);
+            if(atual < (maneuverCombination[prevMask][i] * track[currentSection].bonus) + p){
+                finalCombination[currentSection] = i;
+                atual = (maneuverCombination[prevMask][i] * track[currentSection].bonus) + p;
+            }
+            memo[currentSection][prevMask] = atual;
         }
-
+        return atual;
     }
 
     void print(vector<vector<ll>>& v){
@@ -182,7 +186,6 @@
 
     void printCombination(){
         for(int i = 0; i < finalCombination.size(); i++){
-            //ll aux = countSetBits(finalCombination[i]), count = 0;
             cout << countSetBits(finalCombination[i]) << " ";
             ll aux = finalCombination[i], count = 0;
             while(aux){
@@ -206,19 +209,19 @@
         vector<maneuver> maneuvers;
         for(ll i = 0; i < k; i++){
             maneuver m; cin >> m.pontuation >> m.time;
-            if(m.pontuation >= 0 && m.time <= maxTime) maneuvers.pb(m);
+            if(m.time <= maxTime) maneuvers.pb(m);
         }
 
         vector<vector<ll>> maneuverCombination(1 << maneuvers.size(), vector<ll>(1 << maneuvers.size()));
 
         auxCombination.resize(n, 0), finalCombination.resize(n, 0);        
-        memo.resize(n, vector<ll>(1 << maneuvers.size(), -1));
+        memo.resize(n, vector<ll>(1 << maneuvers.size(), -LINF));
 
-        calculeCombination(maneuverCombination, maneuvers, track);            
+        calculeCombination(maneuverCombination, maneuvers);            
 
-        print(memo);
-        cout << dp(maneuverCombination, track, maneuvers, 0, 0, 0) << endl;
-        //printCombination();
+        cout << dp(maneuverCombination, track, maneuvers, 0, 0) << endl;
+        //print(memo);
+        printCombination();
     }
      
     int main(){ 
