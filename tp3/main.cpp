@@ -106,6 +106,7 @@
     const ll LINF = 0x3f3f3f3f3f3f3f3fll;
 
     vector<ll> auxCombination, finalCombination;
+    vector<vector<ll>> memo;
 
     class maneuver{
         public:
@@ -158,20 +159,16 @@
         }
     }
     
-    ll value = -1;
-
-    void dp(vector<vector<ll>>& maneuverCombination, vector<section>& track, vector<maneuver>& maneuvers, ll prevMask, ll currentSection, ll currentValue){
-        if(currentSection == track.size()) return; // Certo
+    ll dp(vector<vector<ll>>& maneuverCombination, vector<section>& track, vector<maneuver>& maneuvers, ll prevMask, ll currentSection, ll currentValue){
+        if(currentSection == track.size()) return 0; // Certo
         
-        for(int i = 0; i < maneuverCombination.size(); i++){ //
-            if(calculeTimeUsed(i, maneuvers) > track[currentSection].time) continue; 
-            auxCombination[currentSection] = i;
-            dp(maneuverCombination, track, maneuvers, i, currentSection + 1, currentValue + (maneuverCombination[prevMask][i] * track[currentSection].bonus));
-            if(value < currentValue + (maneuverCombination[prevMask][i] * track[currentSection].bonus)){
-                finalCombination = auxCombination;
-                value = currentValue + (maneuverCombination[prevMask][i] * track[currentSection].bonus);
-            }
+        for(int i = 0; i < maneuverCombination.size(); i++){ // Certo
+            if(calculeTimeUsed(i, maneuvers) > track[currentSection].time) continue; // Certo
+            ll& prev = memo[currentSection][i]; // Certo
+            if(prev != -1) return prev; // Certo
+            
         }
+
     }
 
     void print(vector<vector<ll>>& v){
@@ -215,15 +212,13 @@
         vector<vector<ll>> maneuverCombination(1 << maneuvers.size(), vector<ll>(1 << maneuvers.size()));
 
         auxCombination.resize(n, 0), finalCombination.resize(n, 0);        
+        memo.resize(n, vector<ll>(1 << maneuvers.size(), -1));
 
-        calculeCombination(maneuverCombination, maneuvers, track);
-        
-        //print(maneuverCombination);
-        
-        dp(maneuverCombination, track, maneuvers, 0, 0, 0);
+        calculeCombination(maneuverCombination, maneuvers, track);            
 
-        cout << value << endl;
-        printCombination();
+        print(memo);
+        cout << dp(maneuverCombination, track, maneuvers, 0, 0, 0) << endl;
+        //printCombination();
     }
      
     int main(){ 
