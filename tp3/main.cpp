@@ -91,141 +91,203 @@
 // /,,*,,*,,,,,,#%&%###%%%####%%%%###%%%####%%%%%%##%%&%#(###############(////(#############(/#%&%%%%%%%%%%%%%#%%&&%%%##%%%#######((((,,,,,,,,,,,,*,**/(((#
 // /,,*,,*,,,,,,#%&%###%%%####%%%%###%%%####%%%%%%##%%&%#(###############(////(#############(/#%&%%%%%%%%%%%%%#%%&&%%%##%%%#######((((,,,,,,,,,,,,*,**/(((#
     
-    #include <bits/stdc++.h>
-    using namespace std;
-     
-    #define _ ios_base::sync_with_stdio(0);cin.tie(0);
-    #define endl '\n'
-    #define ff first
-    #define ss second
-    #define pb push_back
-     
-    typedef long long ll;
-     
-    const int INF = 0x3f3f3f3f;
-    const ll LINF = 0x3f3f3f3f3f3f3f3fll;
+#include <bits/stdc++.h>
+using namespace std;
+ 
+#define _ ios_base::sync_with_stdio(0);cin.tie(0);
+#define endl '\n'
+#define ff first
+#define ss second
+#define pb push_back
 
-    vector<ll> auxCombination, finalCombination;
-    vector<vector<ll>> memo;
+typedef long long ll;
 
-    class maneuver{
-        public:
-            ll pontuation;
-            ll time;
-    };
+//! Constant representing infinity for integer values
+const int INF = 0x3f3f3f3f;
+//! Constant representing infinity for long long values
+const ll LINF = 0x3f3f3f3f3f3f3f3fll;
 
-    class section{
-        public:
-            ll bonus;
-            ll time;
-    };        
+//! 2D vector to store memoization table with pair of values
+vector<vector<pair<ll, ll>>> memo;
 
-    ll countSetBits(ll n){
-        ll count = 0;
-        while(n){
-            count += n & 1;
-            n >>= 1;
-        }
-        return count;
+//! Class representing a maneuver with its pontuation and time duration
+class maneuver{
+    public:
+        ll pontuation;  //!< Pontuation of the maneuver
+        ll time;        //!< Time required to perform the maneuver
+};
+
+//! Class representing a section of the track with a bonus and time limit
+class section{
+    public:
+        ll bonus;       //!< Bonus multiplier for the section
+        ll time;        //!< Time limit for the section
+};        
+
+/*!
+ * @brief       Counts the number of set bits (1s) in a binary representation of a number.
+ * @param       n   The number to be evaluated.
+ * @return      The count of set bits.
+ */
+ll countSetBits(ll n){
+    ll count = 0;
+    //! Iterate until all bits are checked
+    while(n){
+        count += n & 1;  //!< Increment count if the least significant bit is 1
+        n >>= 1;         //!< Shift bits to the right by 1
     }
+    return count;
+}
 
-    ll calculeTimeUsed(ll mask, vector<maneuver>& maneuvers){
-        ll total = 0, position = 0;
-        while(mask){
-            if(mask & 1){
-                total += maneuvers[position].time;
-            }
-            mask >>= 1; position++;
+/*!
+ * @brief       Calculates the total time used for selected maneuvers represented by the bitmask.
+ * @param       mask        Bitmask representing the selection of maneuvers.
+ * @param       maneuvers   Vector of available maneuvers.
+ * @return      Total time required for the selected maneuvers.
+ */
+ll calculeTimeUsed(ll mask, vector<maneuver>& maneuvers){
+    ll total = 0, position = 0;
+    //! Iterate through the maneuvers based on the bitmask
+    while(mask){
+        if(mask & 1){   //!< If the current bit is set, add the maneuver's time
+            total += maneuvers[position].time;
         }
-        return total;
+        mask >>= 1; position++; //!< Shift mask and increment position
     }
+    return total;
+}
 
-    void calculeCombination(vector<vector<ll>>& maneuverCombination, vector<maneuver>& maneuvers){
-        for(ll i = 0; i < maneuverCombination.size(); i++){
-            maneuverCombination[i][0] = 0;
-            for(ll j = 1; j < maneuverCombination[i].size(); j++){
-                ll count = 0, a = i, b = j, sum = 0, mult = 0;
-                while(b){
-                    if(b & 1){
-                        if(a & 1) sum += maneuvers[count].pontuation/2;
-                        else sum += maneuvers[count].pontuation;
-                        mult++;
-                    }
-                    count++;
-                    a>>=1; b>>=1;
+/*!
+ * @brief       Precomputes the score combinations for each possible subset of maneuvers.
+ * @param       maneuverCombination  2D vector to store the combinations of scores.
+ * @param       maneuvers            Vector of available maneuvers.
+ */
+void calculeCombination(vector<vector<ll>>& maneuverCombination, vector<maneuver>& maneuvers){
+    //! Iterate through all possible combinations of maneuvers
+    for(ll i = 0; i < maneuverCombination.size(); i++){
+        maneuverCombination[i][0] = 0;
+        for(ll j = 1; j < maneuverCombination[i].size(); j++){
+            ll count = 0, a = i, b = j, sum = 0, mult = 0;
+            //! Calculate the combined score for the current pair of masks (a, b)
+            while(b){
+                if(b & 1){
+                    if(a & 1) sum += maneuvers[count].pontuation/2; //!< Apply half pontuation if maneuver is repeated
+                    else sum += maneuvers[count].pontuation;
+                    mult++;
                 }
-                maneuverCombination[i][j] = sum * mult;
-            }
-        }
-    }
-    
-    ll dp(vector<vector<ll>>& maneuverCombination, vector<section>& track, vector<maneuver>& maneuvers, ll prevMask, ll currentSection){
-        if(currentSection == track.size()) return 0; 
-        if(memo[currentSection][prevMask] != -LINF) return memo[currentSection][prevMask];
-        ll atual = 0;
-        for(ll i = 0; i < maneuverCombination.size(); i++){ 
-            if(calculeTimeUsed(i, maneuvers) > track[currentSection].time) continue;    
-            ll p = dp(maneuverCombination, track, maneuvers, i, currentSection + 1);
-            if(atual < (maneuverCombination[prevMask][i] * track[currentSection].bonus) + p){
-                finalCombination[currentSection] = i;
-                atual = (maneuverCombination[prevMask][i] * track[currentSection].bonus) + p;
-            }
-            memo[currentSection][prevMask] = atual;
-        }
-        return atual;
-    }
-
-    void print(vector<vector<ll>>& v){
-        for(int i = 0; i < v.size(); i++){
-            for(int j = 0; j < v[i].size(); j++){
-                cout << v[i][j] << " ";
-            }   
-            cout << endl;
-        }
-    }
-
-    void printCombination(){
-        for(int i = 0; i < finalCombination.size(); i++){
-            cout << countSetBits(finalCombination[i]) << " ";
-            ll aux = finalCombination[i], count = 0;
-            while(aux){
-                if(aux & 1) cout << count + 1 << " ";
-                aux >>= 1;
                 count++;
+                a>>=1; b>>=1;
             }
-            cout << endl;
+            maneuverCombination[i][j] = sum * mult;
         }
     }
+}
 
-    void solve(){
-
-        ll n, k, maxTime = 0; cin >> n >> k;
-        vector<section> track(n);
-        for(ll i = 0; i < n; i++){
-            cin >> track[i].bonus >> track[i].time;
-            maxTime = max(maxTime, track[i].time);
+/*!
+ * @brief       Dynamic programming function to calculate the maximum possible score.
+ * @param       maneuverCombination  2D vector of precomputed maneuver combinations.
+ * @param       track                Vector representing the sections of the track.
+ * @param       maneuvers            Vector of available maneuvers.
+ * @param       prevMask             Bitmask representing maneuvers selected in the previous section.
+ * @param       currentSection       Current section index being evaluated.
+ * @return      The maximum score attainable for the given section and maneuver combination.
+ */
+ll dp(vector<vector<ll>>& maneuverCombination, vector<section>& track, vector<maneuver>& maneuvers, ll prevMask, ll currentSection){
+    if(currentSection == track.size()) return 0; //!< Base case: all sections processed
+    if(memo[currentSection][prevMask].first != -LINF) return memo[currentSection][prevMask].first; //!< Return memoized value if available
+    
+    ll atual = 0;
+    //! Iterate over all possible combinations of maneuvers for the current section
+    for(ll i = 0; i < maneuverCombination.size(); i++){ 
+        if(calculeTimeUsed(i, maneuvers) > track[currentSection].time) continue; //!< Skip if time exceeds the section's limit    
+        ll p = dp(maneuverCombination, track, maneuvers, i, currentSection + 1); //!< Recursive call for the next section
+        //! Update the maximum score for the current section
+        if(atual < (maneuverCombination[prevMask][i] * track[currentSection].bonus) + p){
+            memo[currentSection][prevMask].second = i;
+            atual = (maneuverCombination[prevMask][i] * track[currentSection].bonus) + p;
         }
+        memo[currentSection][prevMask].first = atual;
+    }
+    return atual;
+}
 
-        vector<maneuver> maneuvers;
-        for(ll i = 0; i < k; i++){
-            maneuver m; cin >> m.pontuation >> m.time;
-            if(m.time <= maxTime) maneuvers.pb(m);
+/*!
+ * @brief       Prints the memoization table for debugging purposes.
+ */
+void print(){
+    //! Print the first element of the memoization pairs
+    for(int i = 0; i < memo.size(); i++){
+        for(int j = 0; j < memo[i].size(); j++){
+            cout << memo[i][j].first << " ";
+        }   
+        cout << endl;
+    }
+    cout << endl;
+    //! Print the second element of the memoization pairs
+    for(int i = 0; i < memo.size(); i++){
+        for(int j = 0; j < memo[i].size(); j++){
+            cout << memo[i][j].second << " ";
+        }   
+        cout << endl;
+    }
+}
+
+/*!
+ * @brief       Prints the optimal sequence of maneuvers based on the memoization table.
+ */
+void printCombination(){  
+    ll aux = 0;
+    //! Iterate through the memoization table to reconstruct the optimal sequence
+    for(int i = 0; i < memo.size(); i++){
+        ll num = memo[i][aux].second, count = 0;
+        cout << countSetBits(num) << " "; //!< Print the number of maneuvers selected
+        while(num){
+            if(num & 1) cout << count + 1 << " "; //!< Print the index of selected maneuvers
+            num >>= 1;
+            count++;
         }
-
-        vector<vector<ll>> maneuverCombination(1 << maneuvers.size(), vector<ll>(1 << maneuvers.size()));
-
-        auxCombination.resize(n, 0), finalCombination.resize(n, 0);        
-        memo.resize(n, vector<ll>(1 << maneuvers.size(), -LINF));
-
-        calculeCombination(maneuverCombination, maneuvers);            
-
-        cout << dp(maneuverCombination, track, maneuvers, 0, 0) << endl;
-        //print(memo);
-        printCombination();
+        cout << endl;
+        aux = memo[i][aux].second;
     }
-     
-    int main(){ 
-        int t = 1;
-        while(t--) solve();
-        exit(0);
+}
+
+/*!
+ * @brief       Main function to solve the problem by initializing necessary variables, 
+ *              precomputing combinations, and calling the dynamic programming function.
+ */
+void solve(){
+    ll n, k, maxTime = 0; 
+    cin >> n >> k; //!< Input number of sections and maneuvers
+    vector<section> track(n);
+    
+    //! Input section details and determine the maximum time limit
+    for(ll i = 0; i < n; i++){
+        cin >> track[i].bonus >> track[i].time;
+        maxTime = max(maxTime, track[i].time);
     }
+
+    vector<maneuver> maneuvers;
+    //! Input maneuver details and filter out those exceeding the maximum time limit
+    for(ll i = 0; i < k; i++){
+        maneuver m; cin >> m.pontuation >> m.time;
+        if(m.time <= maxTime) maneuvers.pb(m);
+    }
+
+    //! Initialize the maneuver combination table with all possible subsets
+    vector<vector<ll>> maneuverCombination(1 << maneuvers.size(), vector<ll>(1 << maneuvers.size()));
+
+    //! Initialize the memoization table with negative infinity values
+    memo.resize(n, vector<pair<ll, ll>>(1 << maneuvers.size(), {-LINF, 0}));
+
+    calculeCombination(maneuverCombination, maneuvers); //!< Precompute the maneuver combinations
+
+    cout << dp(maneuverCombination, track, maneuvers, 0, 0) << endl; //!< Compute and output the maximum score
+    
+    printCombination(); //!< Print the sequence of maneuvers
+}
+
+int main(){ 
+    int t = 1;
+    while(t--) solve(); //!< Call the solve function for each test case
+    exit(0);
+}
